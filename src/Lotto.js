@@ -1,8 +1,15 @@
+import { Random } from "@woowacourse/mission-utils";
+import { Console } from "@woowacourse/mission-utils";
+
+Console.print("ddd");
+console.log(Random.pickUniqueNumbersInRange(1, 45, 6));
+
 class Lotto {
   #numbers;
 
   constructor(numbers) {
     this.#validate(numbers);
+    this.#validateDuplicate(numbers);
     this.#numbers = numbers;
   }
 
@@ -12,7 +19,16 @@ class Lotto {
     }
   }
 
-  // TODO: 추가 기능 구현
+  #validateDuplicate() {
+    const set = new Set(numbers);
+    if (set.length != 6) {
+      throw new Error("[ERROR] 로또 번호에 중복이 있으면 안됩니다.");
+    }
+  }
+
+  getLottoNumbers() {
+    return this.#numbers.sort((a, b) => a - b);
+  }
 }
 
 export default Lotto;

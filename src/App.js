@@ -71,6 +71,10 @@ class App {
       throw new Error("[ERROR] 1000원 단위의 숫자로 입력하세요.");
     }
 
+    if (price <= 0) {
+      throw new Error("[ERROR] 로또를 구매하려면 1000원 이상 입력해주세요!");
+    }
+
     return Math.floor(price / 1000);
   }
 
@@ -105,10 +109,12 @@ class App {
 
   #correctLotto(numbers, lottoNumbers, lottoBonusNumber) {
     const correctLottos = numbers.filter((num) => lottoNumbers.includes(num));
+
     if (correctLottos.length == 5) {
-      const remainingNumber = numbers.filter((num) => !lottoNumbers.includes(num));
+      const remainingNumber = numbers.find((num) => !lottoNumbers.includes(num));
+
       if (remainingNumber == lottoBonusNumber) {
-        lottoStats["5+"] += 1;
+        return (lottoStats["5+"] += 1);
       }
     }
 

@@ -48,8 +48,6 @@ class App {
         "보너스 번호를 입력해주세요.\n"
       );
 
-      Console.print(typeof inputWinningLottoBonusNumber);
-
       const winningLottoBonusNumber = this.#isValidBonusNumber(
         winningLottoNumbers,
         inputWinningLottoBonusNumber
@@ -89,14 +87,13 @@ class App {
   }
 
   #isValidBonusNumber(lottoNumbers, rawNumber) {
-    const number = parseInt(rawNumber, 10);
-    if (
-      !isNaN(number) && // NaN으로 읽히지 않을 때,
-      typeof number != "number" &&
-      number >= 1 &&
-      number <= 45
-    ) {
+    const number = Number(rawNumber);
+    if (!isNaN(number)) {
       throw new Error("[ERROR] 보너스 숫자는 '숫자'로 입력해야 합니다.");
+    }
+
+    if (1 > number || number > 45 || !(number % 1 === 0)) {
+      throw new Error("[ERROR] 보너스 숫자로 1부터 45 사이의 정수를 원합니다.");
     }
 
     if (lottoNumbers.includes(number)) {

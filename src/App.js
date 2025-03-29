@@ -50,7 +50,7 @@ class App {
       Console.print("당첨 통계\n---");
       this.#statistics(buyingPrice);
     } catch (error) {
-      Console.print(error);
+      Console.print(error.message);
     }
   }
 

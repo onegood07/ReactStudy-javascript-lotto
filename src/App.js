@@ -14,7 +14,7 @@ const lottoStats = {
 // 로또 번호 상금
 const prize = {
   3: 5_000,
-  4: 5_0000,
+  4: 50_000,
   5: 1_500_000,
   "5+": 30_000_000,
   6: 2_000_000_000,
@@ -26,9 +26,7 @@ class App {
     try {
       const lottos = [];
 
-      const buyingPrice = await Console.readLineAsync(
-        "구입금액을 입력해 주세요.\n"
-      );
+      const buyingPrice = await Console.readLineAsync("구입금액을 입력해 주세요.\n");
 
       const buyingLottosCount = this.#calculateMaxLottosToBuy(buyingPrice);
       Console.print(`${buyingLottosCount}개를 구매했습니다.`);
@@ -40,18 +38,17 @@ class App {
         Console.print(lotto.lottoNumbers);
       }
 
-      const inputWinningLottoNumbers = await Console.readLineAsync(
-        "당첨 번호를 입력해주세요.\n"
-      );
+      const inputWinningLottoNumbers = await Console.readLineAsync("당첨 번호를 입력해주세요.\n");
 
-      const winningLottoNumbers = this.#inputWinningNumbers(
-        inputWinningLottoNumbers
-      );
+      const winningLottoNumbers = this.#inputWinningNumbers(inputWinningLottoNumbers);
+
       const winningLottos = new Lotto(winningLottoNumbers);
 
       const inputWinningLottoBonusNumber = await Console.readLineAsync(
         "보너스 번호를 입력해주세요.\n"
       );
+
+      Console.print(typeof inputWinningLottoBonusNumber);
 
       const winningLottoBonusNumber = this.#isValidBonusNumber(
         winningLottoNumbers,
@@ -60,11 +57,7 @@ class App {
 
       for (let i = 0; i < buyingLottosCount; i++) {
         const lottoNumbers = lottos[i];
-        this.#correctLotto(
-          lottoNumbers,
-          winningLottoNumbers,
-          winningLottoBonusNumber
-        );
+        this.#correctLotto(lottoNumbers, winningLottoNumbers, winningLottoBonusNumber);
       }
 
       Console.print("당첨 통계\n---");
@@ -98,7 +91,7 @@ class App {
   #isValidBonusNumber(lottoNumbers, rawNumber) {
     const number = parseInt(rawNumber, 10);
     if (
-      !isNaN(number) &&
+      !isNaN(number) && // NaN으로 읽히지 않을 때,
       typeof number != "number" &&
       number >= 1 &&
       number <= 45
@@ -116,9 +109,7 @@ class App {
   #correctLotto(numbers, lottoNumbers, lottoBonusNumber) {
     const correctLottos = numbers.filter((num) => lottoNumbers.includes(num));
     if (correctLottos.length == 5) {
-      const remainingNumber = numbers.filter(
-        (num) => !lottoNumbers.includes(num)
-      );
+      const remainingNumber = numbers.filter((num) => !lottoNumbers.includes(num));
       if (remainingNumber == lottoBonusNumber) {
         lottoStats["5+"] += 1;
       }
@@ -142,9 +133,7 @@ class App {
     Console.print(`3개 일치 (5,000원) - ${lottoStats["3"]}개`);
     Console.print(`4개 일치 (50,000원) - ${lottoStats["4"]}개`);
     Console.print(`5개 일치 (1,500,000원) - ${lottoStats["5"]}개`);
-    Console.print(
-      `5개 일치, 보너스 볼 일치 (30,000,000원) - ${lottoStats["5+"]}개`
-    );
+    Console.print(`5개 일치, 보너스 볼 일치 (30,000,000원) - ${lottoStats["5+"]}개`);
     Console.print(`6개 일치 (2,000,000,000원) - ${lottoStats["6"]}개`);
 
     const ROI = ((sumPrize - buyingPrice) / buyingPrice) * 100;

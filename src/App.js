@@ -19,44 +19,33 @@ const prize = {
   "5+": 30_000_000,
   6: 2_000_000_000,
 };
+
 Object.freeze(prize);
 
 class App {
   async play() {
     try {
-      const lottos = [];
-
       const buyingPrice = await Console.readLineAsync("구입금액을 입력해 주세요.\n");
-
       const buyingLottosCount = this.#calculateMaxLottosToBuy(buyingPrice);
       Console.print(`${buyingLottosCount}개를 구매했습니다.`);
 
-      for (let i = 0; i < buyingLottosCount; i++) {
-        const lottoNumbers = this.#pickRandomLottoNumbers();
-        const lotto = new Lotto(lottoNumbers);
-        lottos.push(lotto.lottoNumbers);
+      const lottos = Array.from({ length: buyingLottosCount }, (_, i) => {
+        const lotto = new Lotto(this.#pickRandomLottoNumbers());
         Console.print(lotto.lottoNumbers);
-      }
+        return lotto.lottoNumbers;
+      });
 
-      const inputWinningLottoNumbers = await Console.readLineAsync("당첨 번호를 입력해주세요.\n");
-
-      const winningLottoNumbers = this.#inputWinningNumbers(inputWinningLottoNumbers);
-
-      const winningLottos = new Lotto(winningLottoNumbers);
-
-      const inputWinningLottoBonusNumber = await Console.readLineAsync(
-        "보너스 번호를 입력해주세요.\n"
+      const winningLottoNumbers = this.#inputWinningNumbers(
+        await Console.readLineAsync("당첨 번호를 입력해주세요.\n")
       );
-
       const winningLottoBonusNumber = this.#isValidBonusNumber(
         winningLottoNumbers,
-        inputWinningLottoBonusNumber
+        await Console.readLineAsync("보너스 번호를 입력해주세요.\n")
       );
 
-      for (let i = 0; i < buyingLottosCount; i++) {
-        const lottoNumbers = lottos[i];
-        this.#correctLotto(lottoNumbers, winningLottoNumbers, winningLottoBonusNumber);
-      }
+      lottos.forEach((lotto) =>
+        this.#correctLotto(lotto, winningLottoNumbers, winningLottoBonusNumber)
+      );
 
       Console.print("당첨 통계\n---");
       this.#statistics(buyingPrice);
@@ -66,8 +55,9 @@ class App {
   }
 
   #calculateMaxLottosToBuy(buyingPrice) {
-    const price = parseInt(buyingPrice, 10);
-    if (price % 1000 != 0) {
+    const price = Number(buyingPrice);
+
+    if (price % 1000 != 0 || !(price % 1 === 0)) {
       throw new Error("[ERROR] 1000원 단위의 숫자로 입력하세요.");
     }
 
@@ -82,29 +72,28 @@ class App {
     return Random.pickUniqueNumbersInRange(1, 45, 6);
   }
 
-  #inputWinningNumbers(rawNumbers) {
-    return rawNumbers
-      .split(",")
-      .map((number) => parseInt(number, 10))
-      .filter((number) => !isNaN(number))
-      .sort((a, b) => a - b);
-  }
-
-  #isValidBonusNumber(lottoNumbers, rawNumber) {
+  #isValidLottoNumber(rawNumber) {
     const number = Number(rawNumber);
-    if (!isNaN(number)) {
-      throw new Error("[ERROR] 보너스 숫자는 '숫자'로 입력해야 합니다.");
-    }
 
-    if (1 > number || number > 45 || !(number % 1 === 0)) {
-      throw new Error("[ERROR] 보너스 숫자로 1부터 45 사이의 정수를 원합니다.");
-    }
-
-    if (lottoNumbers.includes(number)) {
-      throw new Error("[ERROR] 보너스 숫자는 당첨 번호와 중복될 수 없습니다.");
+    if (isNaN(number) || 1 > number || number > 45 || !(number % 1 === 0)) {
+      throw new Error("[ERROR] 1부터 45 사이의 정수를 원합니다.");
     }
 
     return number;
+  }
+
+  #isValidBonusNumber(lottoNumbers, rawNumber) {
+    if (lottoNumbers.includes(this.#isValidLottoNumber(rawNumber))) {
+      throw new Error("[ERROR] 보너스 숫자는 당첨 번호와 중복될 수 없습니다.");
+    }
+
+    return;
+  }
+
+  #inputWinningNumbers(rawNumbers) {
+    const lotto = rawNumbers.split(",").filter((num) => this.#isValidLottoNumber(num));
+
+    return new Lotto(lotto).lottoNumbers;
   }
 
   #correctLotto(numbers, lottoNumbers, lottoBonusNumber) {
@@ -124,14 +113,14 @@ class App {
   #statistics(buyingPrice) {
     let sumPrize = 0;
 
-    for (let key in prize) {
+    Object.entries(prize).forEach(([key, money]) => {
       if (key == "5+") {
-        sumPrize += lottoStats["5+"] * prize["5+"];
-        continue;
+        sumPrize += lottoStats["5+"] * money;
+        return;
       }
 
-      sumPrize += lottoStats[key] * prize[key];
-    }
+      sumPrize += lottoStats[key] * money;
+    });
 
     Console.print(`3개 일치 (5,000원) - ${lottoStats["3"]}개`);
     Console.print(`4개 일치 (50,000원) - ${lottoStats["4"]}개`);

@@ -3,24 +3,17 @@ description: 새로운 기능을 구현할 때 사용하는 이슈입니다.
 title: "[feat] Feature Title"
 labels: ["feat"]
 body:
-  - type: input
-    id: feature-name
-    attributes:
-      label: 기능 이름
-      description: 구현하고자 하는 기능명을 작성해주세요.
-      placeholder: 예) 카카오 맵 API 호출 함수 구현
-
   - type: textarea
     id: summary
     attributes:
-      label: 설명
+      label: ✍🏻 설명
       description: 이 기능이 무엇을 하는지 간단히 설명해주세요.
       placeholder: 예) API 호출을 받아 지도를 띄웁니다.
 
   - type: textarea
     id: checklist
     attributes:
-      label: 구현할 기능 목록
+      label: ✅ 구현할 기능 목록
       description: 구현할 기능 목록을 마크다운 체크박스로 작성해주세요.
       placeholder: |
         - [ ] API Key .env에 넣기

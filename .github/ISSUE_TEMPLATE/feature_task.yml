@@ -9,7 +9,6 @@ body:
       label: 기능 이름
       description: 구현하고자 하는 기능명을 작성해주세요.
       placeholder: 예) 카카오 맵 API 호출 함수 구현
-      required: true
 
   - type: textarea
     id: summary
@@ -17,7 +16,6 @@ body:
       label: 설명
       description: 이 기능이 무엇을 하는지 간단히 설명해주세요.
       placeholder: 예) API 호출을 받아 지도를 띄웁니다.
-      required: true
 
   - type: textarea
     id: checklist
@@ -27,4 +25,3 @@ body:
       placeholder: |
         - [ ] API Key .env에 넣기
         - [ ] API 호출 함수 구현
-      required: true
